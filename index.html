@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f7f4fc">
+    <title>Pallavi Physio — Clinic management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <button class="brand" type="button" data-view="dashboard" aria-label="Open clinic overview">
+          <span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M13 5h6v8h8v6h-8v8h-6v-8H5v-6h8z"/></svg></span>
+          <span><span id="clinic-brand-name">Pallavi Physio</span><small id="clinic-brand-specialty">PHYSIOTHERAPY</small></span>
+        </button>
+        <button class="clinic-switcher" type="button" data-view="settings"><span class="clinic-avatar">✚</span><span><strong id="clinic-name-sidebar">Dr. Pallavi Chogale</strong><small><span id="clinic-specialty-sidebar">Physiotherapy</span> clinic · Settings</small></span><span class="chevron">›</span></button>
+        <p class="nav-label">WORKSPACE</p>
+        <nav class="main-nav" aria-label="Main navigation">
+          <button class="nav-item active" data-view="dashboard"><span class="nav-icon">▦</span>Overview</button>
+          <button class="nav-item" data-view="patients"><span class="nav-icon">♧</span>Patients <span class="nav-count" id="patient-count">0</span></button>
+          <button class="nav-item" data-view="appointments"><span class="nav-icon">▦</span>Appointments</button>
+          <button class="nav-item" data-view="visits"><span class="nav-icon">◷</span>Visits & queue</button>
+          <button class="nav-item" data-view="billing"><span class="nav-icon">▤</span>Payments & invoices</button>
+          <button class="nav-item" data-view="reports"><span class="nav-icon">▥</span>Reports</button>
+          <button class="nav-item" data-view="settings"><span class="nav-icon">⚙</span>Clinic settings</button>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="help-card"><span class="help-icon">✳</span><strong>Need a hand?</strong><p>Get help setting up your clinic workspace.</p><button type="button" class="text-button" data-action="help">Open quick guide <span>→</span></button></div>
+          <button class="profile-button" type="button" data-view="settings"><span class="profile-avatar">PC</span><span><strong id="profile-doctor-name">Dr. Pallavi Chogale</strong><small id="profile-doctor-title">Physiotherapist</small></span></button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobile-menu" aria-label="Open navigation">☰</button>
+          <div class="breadcrumb"><span id="breadcrumb-clinic">Dr. Pallavi Chogale</span> <span>/</span> <strong id="breadcrumb-page">Overview</strong></div>
+          <div class="topbar-actions">
+            <span class="today-label" id="today-label"></span>
+            <button class="icon-button notification-button" id="notifications-button" type="button" data-action="notifications" aria-label="Open clinic reminders">♧<i id="notification-dot" hidden></i><span class="notification-count" id="notification-count" hidden></span></button>
+            <button class="button button-quiet lock-button" id="lock-app" type="button" hidden>Lock app</button>
+            <span class="top-avatar">PC</span>
+          </div>
+        </header>
+
+        <div class="demo-notice"><span class="notice-dot"></span><strong>Private local clinic</strong><span>Records are stored on this Windows computer. Use a private Windows account; backups are encrypted for this account.</span><button id="export-data" type="button">Download encrypted backup</button></div>
+        <section id="page-content" class="page-content" aria-live="polite"></section>
+      </main>
+    </div>
+
+    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+    <dialog class="app-dialog" id="patient-dialog">
+      <form id="patient-form" class="dialog-form">
+        <div class="dialog-heading"><div><span class="eyebrow">PATIENT RECORD</span><h2>Add a patient</h2><p>Create a profile before recording their first visit.</p></div><button class="close-button" type="button" data-close-dialog aria-label="Close">×</button></div>
+        <div class="form-grid">
+          <label class="field field-wide">Full name <span>*</span><input name="name" required maxlength="100" autocomplete="name" placeholder="e.g. Priya Sharma"></label>
+          <label class="field">Date of birth<input name="dob" type="date"></label>
+          <label class="field">Gender<select name="gender"><option value="">Prefer not to say</option><option>Female</option><option>Male</option><option>Non-binary</option><option>Other</option></select></label>
+          <label class="field">WhatsApp number<input name="phone" type="tel" maxlength="25" autocomplete="tel" placeholder="+91 98765 43210"><small>Include country code, e.g. +91.</small></label>
+          <label class="field">Emergency contact<input name="emergency" type="tel" maxlength="25" placeholder="Optional"></label>
+          <label class="field field-wide">Address<input name="address" maxlength="180" autocomplete="street-address" placeholder="City or full address"></label>
+        </div>
+        <div class="dialog-actions"><button class="button button-quiet" type="button" data-close-dialog>Cancel</button><button class="button button-primary" type="submit">Save patient <span>→</span></button></div>
+      </form>
+    </dialog>
+
+    <dialog class="app-dialog" id="visit-dialog">
+      <form id="visit-form" class="dialog-form">
+        <div class="dialog-heading"><div><span class="eyebrow" id="visit-eyebrow">PHYSIOTHERAPY SESSION</span><h2 id="visit-heading">Book a session</h2><p id="visit-description">Schedule a patient appointment or record today's session.</p></div><button class="close-button" type="button" data-close-dialog aria-label="Close">×</button></div>
+        <div class="form-grid">
+          <label class="field field-wide">Patient <span>*</span><select name="patientId" id="visit-patient" required></select></label>
+          <label class="field">Service / treatment area<input name="department" value="Physiotherapy" maxlength="70" required></label>
+          <label class="field">Physiotherapist<input name="clinician" value="Dr. Pallavi Chogale" maxlength="100" required></label>
+          <label class="field">Visit date<input name="date" type="date" required></label>
+          <label class="field">Appointment time<input name="time" type="time" required></label>
+          <label class="field">Session fee (₹)<input name="fee" type="number" min="0" step="1" value="700" required></label>
+          <label class="field">Payment plan<select name="billingType"><option value="Per session">Per session</option><option value="Weekly">Weekly plan</option><option value="Monthly">Monthly plan</option><option value="Session package">Session package</option></select></label>
+          <label class="field">Discount type<select name="discountType"><option value="none">No discount</option><option value="percent">Percentage (%)</option><option value="amount">Fixed amount (₹)</option></select></label>
+          <label class="field">Discount value<input name="discountValue" type="number" min="0" step="1" value="0"></label>
+          <label class="field field-wide">Treatment notes / reason<input name="reason" maxlength="180" placeholder="e.g. Knee rehabilitation session"></label>
+          <label class="field">Follow-up date<input name="followUpDate" type="date"></label>
+          <p class="form-hint">Set a return date. The reminder appears in the app; WhatsApp messages require staff action.</p>
+          <label class="field">Payment status<select name="payment"><option value="unpaid">Pending / unpaid</option><option value="paid">Paid in full</option><option value="partial">Part payment</option></select></label>
+          <label class="field">Payment method<select name="method"><option>Cash</option><option>UPI</option><option>Card</option><option>Bank transfer</option></select></label>
+          <label class="field">Amount received now (₹)<input name="paidAmount" type="number" min="0" step="1" value="0"></label>
+        </div>
+        <div class="dialog-actions"><button class="button button-quiet" type="button" data-close-dialog>Cancel</button><button class="button button-primary" type="submit">Save visit <span>→</span></button></div>
+      </form>
+    </dialog>
+    <dialog class="app-dialog" id="reschedule-dialog">
+      <form id="reschedule-form" class="dialog-form">
+        <div class="dialog-heading"><div><span class="eyebrow">APPOINTMENT UPDATE</span><h2>Reschedule session</h2><p>Save the new date and the reason for the change.</p></div><button class="close-button" type="button" data-close-dialog aria-label="Close">×</button></div>
+        <input type="hidden" name="visitId">
+        <div class="form-grid"><label class="field">New date<input name="date" type="date" required></label><label class="field">New time<input name="time" type="time" required></label><label class="field field-wide">Reason<input name="reason" maxlength="180" placeholder="e.g. Patient requested another day" required></label></div>
+        <div class="dialog-actions"><button class="button button-quiet" type="button" data-close-dialog>Cancel</button><button class="button button-primary" type="submit">Save new time <span>→</span></button></div>
+      </form>
+    </dialog>
+    <dialog class="app-dialog" id="payment-dialog">
+      <form id="payment-form" class="dialog-form">
+        <div class="dialog-heading"><div><span class="eyebrow">SESSION PAYMENT</span><h2>Record payment</h2><p>Save the amount received and create a printable invoice.</p></div><button class="close-button" type="button" data-close-dialog aria-label="Close">×</button></div>
+        <input type="hidden" name="visitId">
+        <div class="form-grid"><label class="field">Amount received (₹)<input name="amount" type="number" min="1" step="1" required></label><label class="field">Payment method<select name="method"><option>UPI</option><option>Cash</option><option>Card</option><option>Bank transfer</option></select></label><label class="field field-wide">Payment date<input name="date" type="date" required></label></div>
+        <div class="dialog-actions"><button class="button button-quiet" type="button" data-close-dialog>Cancel</button><button class="button button-primary" type="submit">Save & create invoice <span>→</span></button></div>
+      </form>
+    </dialog>
+    <dialog class="app-dialog" id="no-show-dialog">
+      <form id="no-show-form" class="dialog-form">
+        <div class="dialog-heading"><div><span class="eyebrow">ATTENDANCE</span><h2>Record missed appointment</h2><p>Save a reason if the patient shared one. You can rebook them later.</p></div><button class="close-button" type="button" data-close-dialog aria-label="Close">×</button></div>
+        <input type="hidden" name="visitId">
+        <label class="field field-wide">Reason / follow-up note<input name="reason" maxlength="180" placeholder="Optional, e.g. patient requested another day"></label>
+        <div class="dialog-actions"><button class="button button-quiet" type="button" data-close-dialog>Cancel</button><button class="button button-primary" type="submit">Save no-show</button></div>
+      </form>
+    </dialog>
+    <dialog class="app-dialog" id="whatsapp-dialog">
+      <form id="whatsapp-form" class="dialog-form">
+        <div class="dialog-heading"><div><span class="eyebrow">PATIENT CONTACT</span><h2>Update WhatsApp number</h2><p>Include the country code so invoice and reminder links open correctly.</p></div><button class="close-button" type="button" data-close-dialog aria-label="Close">×</button></div>
+        <input type="hidden" name="patientId">
+        <label class="field field-wide">WhatsApp number<input name="phone" type="tel" maxlength="25" placeholder="+91 98765 43210"></label>
+        <div class="dialog-actions"><button class="button button-quiet" type="button" data-close-dialog>Cancel</button><button class="button button-primary" type="submit">Save number</button></div>
+      </form>
+    </dialog>
+    <dialog class="app-dialog invoice-dialog" id="invoice-dialog">
+      <div id="invoice-content"></div>
+      <div class="invoice-actions"><button class="button button-quiet" type="button" data-close-dialog>Close</button><button class="button button-quiet" type="button" data-action="print-invoice">Print invoice</button><button class="button button-whatsapp" type="button" data-action="whatsapp-invoice">WhatsApp ↗</button></div>
+    </dialog>
+    <dialog class="app-dialog" id="notifications-dialog">
+      <div class="dialog-form">
+        <div class="dialog-heading"><div><span class="eyebrow">CLINIC REMINDERS</span><h2>Things to follow up</h2><p>Pending payments and patient follow-ups saved in the local clinic database.</p></div><button class="close-button" type="button" data-close-dialog aria-label="Close">×</button></div>
+        <div id="notifications-content"></div>
+        <div class="dialog-actions"><button class="button button-quiet" type="button" data-close-dialog>Close</button><button class="button button-primary" type="button" data-view="appointments">Open appointments</button></div>
+      </div>
+    </dialog>
+    <dialog class="app-dialog" id="help-dialog">
+      <div class="dialog-form">
+        <div class="dialog-heading"><div><span class="eyebrow">QUICK GUIDE</span><h2>Run your clinic day</h2><p>Choose a task to jump straight to that part of the app.</p></div><button class="close-button" type="button" data-close-dialog aria-label="Close">×</button></div>
+        <div class="quick-guide-actions">
+          <button class="quick-action" type="button" data-action="new-patient"><span>＋</span><span>Register a patient<small>Save contact and basic profile details</small></span></button>
+          <button class="quick-action" type="button" data-action="new-visit"><span>◷</span><span>Book a session<small>Choose a patient, date, fee and follow-up</small></span></button>
+          <button class="quick-action" type="button" data-view="appointments"><span>▦</span><span>Manage appointments<small>Mark arrivals, no-shows and rebook visits</small></span></button>
+          <button class="quick-action" type="button" data-view="billing"><span>₹</span><span>Record payments<small>Track balances and open printable invoices</small></span></button>
+          <button class="quick-action" type="button" data-view="settings"><span>⚙</span><span>Set clinic details<small>Update the contact information on invoices</small></span></button>
+        </div>
+        <p class="privacy-note">WhatsApp opens a message for staff review; it is not sent automatically. This installation is local to one Windows computer and is not a cloud or multi-device service.</p>
+      </div>
+    </dialog>
+    <dialog class="app-dialog auth-dialog" id="auth-dialog">
+      <form id="auth-form" class="dialog-form">
+        <div class="dialog-heading"><div><span class="eyebrow">PRIVATE CLINIC DATABASE</span><h2 id="auth-title">Secure clinic setup</h2><p id="auth-description">Create the clinic owner account. The password cannot be recovered if lost.</p></div></div>
+        <div class="form-grid">
+          <label class="field field-wide">Username<input name="username" required minlength="3" maxlength="80" autocomplete="username"></label>
+          <label class="field field-wide">Password<input name="password" type="password" required minlength="14" maxlength="1024" autocomplete="new-password"><small id="password-help">Use a unique passphrase with at least 14 characters.</small></label>
+          <label class="field field-wide" id="password-confirm-field">Confirm password<input name="confirmPassword" type="password" required minlength="14" maxlength="1024" autocomplete="new-password"></label>
+          <p class="form-hint" id="auth-error" role="alert"></p>
+        </div>
+        <div class="dialog-actions"><button class="button button-primary" id="auth-submit" type="submit">Create protected database</button></div>
+      </form>
+    </dialog>
+  </body>
+</html>
